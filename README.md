@@ -1,5 +1,8 @@
 # docker-jupyter-keras-tools
-Dockerized version of Jupyter with installed Keras, TensorFlow, Theano, etc
+
+It should have been named "Jupyter for Deep Learning, Natural Language Processing and common Data Mining".
+
+Dockerized version of Jupyter with installed Keras, TensorFlow, Theano, Sklearn, NLTK, Gensim, Pandas, etc.
 
 ## Run
 
@@ -11,7 +14,7 @@ This by default enables all the devices.
         $(for f in /usr/lib/x86_64-linux-gnu/libcudnn.* ; do echo -n "-v $f:$f " ; done) \
         -v `pwd`:/notebook \
         -p 8888:8888 \
-        windj007/docker-jupyter-keras-tools
+        windj007/jupyter-keras-tools
 
 After that, jupyter notebook will be available at http://<hostname>:8888/.
         
@@ -26,7 +29,7 @@ After that, jupyter notebook will be available at http://<hostname>:8888/.
         $(for f in /usr/lib/x86_64-linux-gnu/libcudnn.* ; do echo -n "-v $f:$f " ; done) \
         -v `pwd`:/notebook \
         -p 8888:8888 \
-        windj007/docker-jupyter-keras-tools \
+        windj007/jupyter-keras-tools \
         /test_scripts/test_theano.py
 
 
@@ -38,7 +41,7 @@ After that, jupyter notebook will be available at http://<hostname>:8888/.
         $(for f in /usr/lib/x86_64-linux-gnu/libcudnn.* ; do echo -n "-v $f:$f " ; done) \
         -v `pwd`:/notebook \
         -p 8888:8888 \
-        windj007/docker-jupyter-keras-tools \
+        windj007/jupyter-keras-tools \
         /test_scripts/test_tensorflow.py
 
 
@@ -46,4 +49,4 @@ After that, jupyter notebook will be available at http://<hostname>:8888/.
 
     git clone https://github.com/windj007/docker-jupyter-keras-tools
     cd docker-jupyter-keras-tools
-    docker build -t windj007/docker-jupyter-keras-tools .
+    docker build -t windj007/jupyter-keras-tools .
