@@ -8,7 +8,7 @@ RUN apt-get install -yqq python python-pip python-dev build-essential \
 
 RUN pip install -U jupyter numpy scipy pandas nltk gensim sklearn theano \
     https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.9.0rc0-cp27-none-linux_x86_64.whl
-RUN pip install -U annoy keras ujson
+RUN pip install -U annoy keras ujson line_profiler
 
 EXPOSE 8888
 VOLUME ["/notebook"]
