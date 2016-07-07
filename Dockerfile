@@ -4,7 +4,9 @@ MAINTAINER Roman Suvorov windj007@gmail.com
 
 RUN apt-get clean && apt-get update
 RUN apt-get install -yqq python python-pip python-dev build-essential \
-    git wget libopenblas-dev gfortran liblapack-dev libhdf5-dev
+    git wget gfortran libatlas-dev libatlas3-base libhdf5-dev
+RUN update-alternatives --set libblas.so.3 /usr/lib/atlas-base/atlas/libblas.so.3
+RUN update-alternatives --set liblapack.so.3 /usr/lib/atlas-base/atlas/liblapack.so.3
 
 RUN pip install -U jupyter numpy scipy pandas nltk gensim sklearn theano \
     https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.9.0rc0-cp27-none-linux_x86_64.whl
