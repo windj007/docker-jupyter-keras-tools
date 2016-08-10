@@ -16,11 +16,16 @@ RUN pip install -U h5py lxml git+https://github.com/openai/gym
 
 
 EXPOSE 8888
-VOLUME ["/notebook"]
+VOLUME ["/notebook", "/jupyter/certs"]
 WORKDIR /notebook
 
 ADD test_scripts /test_scripts
+ADD jupyter /jupyter
+COPY entrypoint.sh /entrypoint.sh
+COPY hashpwd.py /hashpwd.py
 
 ENV THEANO_FLAGS=mode=FAST_RUN,device=gpu,floatX=float32
+ENV JUPYTER_CONFIG_DIR="/jupyter"
 
-CMD jupyter notebook --ip=0.0.0.0
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["jupyter", "notebook", "--ip=0.0.0.0"]
