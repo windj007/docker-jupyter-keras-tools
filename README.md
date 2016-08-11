@@ -27,8 +27,6 @@ After that, jupyter notebook will be available at http://<hostname>:8888/.
         $(for d in /dev/nvidia* ; do echo -n "--device=$d " ; done) \
         $(for f in /usr/lib/x86_64-linux-gnu/libcuda.* ; do echo -n "-v $f:$f " ; done) \
         $(for f in /usr/lib/x86_64-linux-gnu/libcudnn.* ; do echo -n "-v $f:$f " ; done) \
-        -v `pwd`:/notebook \
-        -p 8888:8888 \
         windj007/jupyter-keras-tools \
         /test_scripts/test_theano.py
 
@@ -39,8 +37,6 @@ After that, jupyter notebook will be available at http://<hostname>:8888/.
         $(for d in /dev/nvidia* ; do echo -n "--device=$d " ; done) \
         $(for f in /usr/lib/x86_64-linux-gnu/libcuda.* ; do echo -n "-v $f:$f " ; done) \
         $(for f in /usr/lib/x86_64-linux-gnu/libcudnn.* ; do echo -n "-v $f:$f " ; done) \
-        -v `pwd`:/notebook \
-        -p 8888:8888 \
         windj007/jupyter-keras-tools \
         /test_scripts/test_tensorflow.py
 
