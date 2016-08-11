@@ -24,7 +24,6 @@ ADD jupyter /jupyter
 COPY entrypoint.sh /entrypoint.sh
 COPY hashpwd.py /hashpwd.py
 
-ENV THEANO_FLAGS=mode=FAST_RUN,device=gpu,floatX=float32
 ENV JUPYTER_CONFIG_DIR="/jupyter"
 
 ENTRYPOINT ["/entrypoint.sh"]
