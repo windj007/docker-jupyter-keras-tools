@@ -6,6 +6,29 @@ Dockerized version of Jupyter with installed Keras, TensorFlow, Theano, Sklearn,
 
 ## Run
 
+### It's better to use nvidia-docker
+
+First, install nvidia-docker: https://github.com/NVIDIA/nvidia-docker
+
+Then, run the container:
+
+    nvidia-docker run -ti --rm
+        -v `pwd`:/notebook \
+        -p 8888:8888 \
+        windj007/jupyter-keras-tools
+
+Or, with full options and authentication (for copy-paste convenience :)):
+
+    nvidia-docker run -ti --rm \
+        -e "HASHED_PASSWORD=$YOUR_HASHED_PASSWORD" \
+        -e "SSL=1" \
+        -v /folder/with/your/certs:/jupyter/certs \
+        -v `pwd`:/notebook \
+        -p 8888:8888 \
+        windj007/jupyter-keras-tools
+
+### Without nvidia-docker (may or may not work)
+
 This by default enables all the devices.
 
     docker run -ti --rm \
@@ -17,8 +40,20 @@ This by default enables all the devices.
         windj007/jupyter-keras-tools
 
 After that, jupyter notebook will be available at http://<hostname>:8888/.
-        
-        
+
+Or, with full options and authentication (for copy-paste convenience :)):
+
+    docker run -ti --rm \
+        $(for d in /dev/nvidia* ; do echo -n "--device=$d " ; done) \
+        $(for f in /usr/lib/x86_64-linux-gnu/libcuda.* ; do echo -n "-v $f:$f " ; done) \
+        $(for f in /usr/lib/x86_64-linux-gnu/libcudnn.* ; do echo -n "-v $f:$f " ; done) \
+        -e "HASHED_PASSWORD=$YOUR_HASHED_PASSWORD" \
+        -e "SSL=1" \
+        -v /folder/with/your/certs:/jupyter/certs \
+        -v `pwd`:/notebook \
+        -p 8888:8888 \
+        windj007/jupyter-keras-tools
+
 ## Test
 
 ### Theano
@@ -78,16 +113,3 @@ You have to pass the hashed password and tell jupyter to enable SSL and mount a 
         windj007/jupyter-keras-tools
 
 After that, you will have to access Jupyter with explicit https:// in address (Jupyter does not have automatic redirect, AFAIK, maybe I'm wrong).
-
-Or, with full options (for copy-paste convenience :)):
-
-    docker run -ti --rm \
-        $(for d in /dev/nvidia* ; do echo -n "--device=$d " ; done) \
-        $(for f in /usr/lib/x86_64-linux-gnu/libcuda.* ; do echo -n "-v $f:$f " ; done) \
-        $(for f in /usr/lib/x86_64-linux-gnu/libcudnn.* ; do echo -n "-v $f:$f " ; done) \
-        -e "HASHED_PASSWORD=$YOUR_HASHED_PASSWORD" \
-        -e "SSL=1" \
-        -v /folder/with/your/certs:/jupyter/certs \
-        -v `pwd`:/notebook \
-        -p 8888:8888 \
-        windj007/jupyter-keras-tools
