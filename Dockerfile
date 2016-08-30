@@ -14,6 +14,12 @@ RUN pip install -U jupyter scipy pandas nltk gensim sklearn theano \
         annoy keras ujson line_profiler tables sharedmem matplotlib
 RUN pip install -U h5py lxml git+https://github.com/openai/gym sacred
 
+RUN git clone --recursive https://github.com/dmlc/xgboost /tmp/xgboost && \
+    cd /tmp/xgboost && \
+    make && \
+    cd python-package && \
+    python setup.py install
+
 EXPOSE 8888
 VOLUME ["/notebook", "/jupyter/certs"]
 WORKDIR /notebook
