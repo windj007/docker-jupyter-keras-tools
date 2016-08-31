@@ -1,4 +1,4 @@
-FROM nvidia/cuda:7.5-cudnn5-devel
+FROM nvidia/cuda:6.5-devel
 
 MAINTAINER Roman Suvorov windj007@gmail.com
 
