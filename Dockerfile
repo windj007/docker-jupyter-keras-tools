@@ -12,7 +12,8 @@ RUN pip install -U numpy # thanks to libatlas-base-dev (base! not libatlas-dev),
 RUN pip install -U jupyter scipy pandas nltk gensim sklearn theano \
         https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.9.0rc0-cp27-none-linux_x86_64.whl \
         annoy keras ujson line_profiler tables sharedmem matplotlib
-RUN pip install -U h5py lxml git+https://github.com/openai/gym sacred iplotter
+RUN pip install -U h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
+        plotly pprofile mlxtend
 
 RUN git clone --recursive https://github.com/dmlc/xgboost /tmp/xgboost && \
     cd /tmp/xgboost && \
