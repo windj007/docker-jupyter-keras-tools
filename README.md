@@ -12,7 +12,7 @@ First, install nvidia-docker: https://github.com/NVIDIA/nvidia-docker
 
 Then, run the container:
 
-    nvidia-docker run -ti --rm
+    nvidia-docker run -ti --rm \
         -v `pwd`:/notebook \
         -p 8888:8888 \
         windj007/jupyter-keras-tools
@@ -26,6 +26,9 @@ Or, with full options and authentication (for copy-paste convenience :)):
         -v `pwd`:/notebook \
         -p 8888:8888 \
         windj007/jupyter-keras-tools
+
+You may want to add something like **--shm-size=1024m** to the commands above, because sklearn.grid_search.GridSearchCV may fail if you train large models.
+
 
 ### Without nvidia-docker (may or may not work)
 
