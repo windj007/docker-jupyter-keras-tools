@@ -5,7 +5,8 @@ MAINTAINER Roman Suvorov windj007@gmail.com
 RUN apt-get clean && apt-get update
 RUN apt-get install -yqq python python-pip python-dev build-essential \
     git wget gfortran libatlas-base-dev libatlas-dev libatlas3-base libhdf5-dev \
-    libfreetype6-dev libpng12-dev pkg-config libxml2-dev libxslt-dev
+    libfreetype6-dev libpng12-dev pkg-config libxml2-dev libxslt-dev \
+    libboost-program-options-dev zlib1g-dev libboost-python-dev
 
 RUN pip install -U cython
 RUN pip install -U numpy # thanks to libatlas-base-dev (base! not libatlas-dev), it will link to atlas
@@ -13,7 +14,7 @@ RUN pip install -U jupyter scipy pandas nltk gensim sklearn theano \
         https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.9.0rc0-cp27-none-linux_x86_64.whl \
         annoy git+https://github.com/fchollet/keras ujson line_profiler tables sharedmem matplotlib
 RUN pip install -U h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
-        plotly pprofile mlxtend
+        plotly pprofile mlxtend vowpalwabbit
 
 RUN git clone --recursive https://github.com/dmlc/xgboost /tmp/xgboost && \
     cd /tmp/xgboost && \
