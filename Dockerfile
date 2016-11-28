@@ -11,7 +11,7 @@ RUN apt-get install -yqq python python-pip python-dev build-essential \
 RUN pip install -U cython
 RUN pip install -U numpy # thanks to libatlas-base-dev (base! not libatlas-dev), it will link to atlas
 RUN pip install -U jupyter scipy pandas nltk gensim sklearn theano \
-        https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.10.0-cp27-none-linux_x86_64.whl \
+        https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.11.0-cp27-none-linux_x86_64.whl \
         annoy git+https://github.com/fchollet/keras ujson line_profiler tables sharedmem matplotlib
 RUN pip install -U h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
         plotly pprofile mlxtend vowpalwabbit fitter
