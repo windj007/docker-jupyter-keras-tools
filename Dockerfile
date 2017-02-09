@@ -8,6 +8,7 @@ RUN apt-get install -yqq python python-pip python-dev build-essential \
     libfreetype6-dev libpng12-dev pkg-config libxml2-dev libxslt-dev \
     libboost-program-options-dev zlib1g-dev libboost-python-dev
 
+RUN pip insatll -U pip
 RUN pip install -U cython
 RUN pip install -U numpy # thanks to libatlas-base-dev (base! not libatlas-dev), it will link to atlas
 RUN pip install -U jupyter scipy pandas nltk gensim sklearn theano \
