@@ -31,7 +31,7 @@ RUN git clone --recursive https://github.com/Microsoft/LightGBM /tmp/lgbm && \
     mkdir build && \
     cd build && \
     cmake .. && \
-    make -j && \
+    make && \
     cd ../python-package && \
     python setup.py install && \
     cd /tmp && \
