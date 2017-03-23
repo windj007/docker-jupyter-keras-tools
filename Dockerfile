@@ -37,8 +37,7 @@ RUN git clone --recursive https://github.com/Microsoft/LightGBM /tmp/lgbm && \
     cd /tmp && \
     rm -r /tmp/lgbm
 
-RUN pip uninstall -y tensorflow && \
-    pip install -U tensorflow-gpu
+RUN pip install -U tensorflow-gpu
 
 EXPOSE 8888
 VOLUME ["/notebook", "/jupyter/certs"]
