@@ -15,7 +15,7 @@ RUN pip install -U jupyter scipy pandas nltk gensim sklearn theano tensorflow-gp
         annoy git+https://github.com/fchollet/keras ujson line_profiler tables sharedmem matplotlib
 RUN pip install -U h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
         plotly pprofile mlxtend vowpalwabbit fitter mpld3 \
-        jupyter_nbextensions_configurator jupyter_contrib_nbextensions fasttext \
+        jupyter_nbextensions_configurator jupyter_contrib_nbextensions==0.2.4 fasttext \
         imbalanced-learn forestci category_encoders hdbscan seaborn networkx joblib
 RUN jupyter contrib nbextension install --system && \
     jupyter nbextensions_configurator enable --system
