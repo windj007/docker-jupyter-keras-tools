@@ -16,9 +16,10 @@ RUN pip install -U jupyter scipy pandas nltk gensim sklearn theano tensorflow-gp
 RUN pip install -U h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
         plotly pprofile mlxtend vowpalwabbit fitter mpld3 \
         jupyter_nbextensions_configurator jupyter_contrib_nbextensions==0.2.4 fasttext \
-        imbalanced-learn forestci category_encoders hdbscan seaborn networkx joblib
+        imbalanced-learn forestci category_encoders hdbscan seaborn networkx joblib eli5
 RUN jupyter contrib nbextension install --system && \
-    jupyter nbextensions_configurator enable --system
+    jupyter nbextensions_configurator enable --system && \
+    jupyter nbextension enable --py --sys-prefix widgetsnbextension
 
 RUN git clone --recursive https://github.com/dmlc/xgboost /tmp/xgboost && \
     cd /tmp/xgboost && \
