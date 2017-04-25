@@ -52,4 +52,4 @@ COPY hashpwd.py /hashpwd.py
 ENV JUPYTER_CONFIG_DIR="/jupyter"
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["jupyter", "notebook", "--ip=0.0.0.0"]
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--allow-root"]
