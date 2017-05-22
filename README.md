@@ -6,9 +6,9 @@ Dockerized version of Jupyter with installed Keras, TensorFlow, Theano, Sklearn,
 
 Versions:
 * latest tag - python 3.6 + cuda 8.0 CuDNNv5 - master branch
-* cuda8.0 tag - python 2.7 + cuda 8.0 CuDNNv5 - cuda8.0 branch (limited support)
-* cuda7.5 tag - python 2.7 + cuda 7.5 CuDNNv5 - cuda7.5 branch (unsupported!)
-* cuda6.5 tag - python 2.7 + cuda 6.5 - cuda6.5 branch (unsupported!)
+* 8.0 tag - python 2.7 + cuda 8.0 CuDNNv5 - cuda8.0 branch (limited support)
+* 7.5 tag - python 2.7 + cuda 7.5 CuDNNv5 - cuda7.5 branch (unsupported!)
+* 6.5 tag - python 2.7 + cuda 6.5 - cuda6.5 branch (unsupported!)
 
 ## Run
 
