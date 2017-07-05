@@ -7,7 +7,7 @@ RUN apt-get install -yqq build-essential libbz2-dev libssl-dev libreadline-dev \
                          libsqlite3-dev tk-dev libpng-dev libfreetype6-dev git \
                          cmake wget gfortran libatlas-base-dev libatlas-dev \
                          libatlas3-base libhdf5-dev libxml2-dev libxslt-dev \
-                         zlib1g-dev pkg-config curl
+                         zlib1g-dev pkg-config curl graphviz
 
 RUN curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
 ENV PYENV_ROOT /root/.pyenv
@@ -23,7 +23,8 @@ RUN python -m pip install -U jupyter scipy pandas nltk gensim sklearn theano ten
 RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
         plotly pprofile mlxtend fitter mpld3 \
         jupyter_nbextensions_configurator jupyter_contrib_nbextensions==0.2.4 fasttext \
-        imbalanced-learn forestci category_encoders hdbscan seaborn networkx joblib eli5
+        imbalanced-learn forestci category_encoders hdbscan seaborn networkx joblib eli5 \
+        pydot graphviz dask[complete]
 
 RUN pyenv rehash
 
