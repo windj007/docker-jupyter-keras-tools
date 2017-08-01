@@ -24,7 +24,7 @@ RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred 
         plotly pprofile mlxtend fitter mpld3 \
         jupyter_nbextensions_configurator jupyter_contrib_nbextensions==0.2.4 fasttext \
         imbalanced-learn forestci category_encoders hdbscan seaborn networkx joblib eli5 \
-        pydot graphviz dask[complete] opencv-python keras-vis
+        pydot graphviz dask[complete] opencv-python keras-vis pandas-profiling
 
 RUN pyenv rehash
 
