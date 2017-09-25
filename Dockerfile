@@ -1,4 +1,4 @@
-FROM nvidia/cuda:8.0-cudnn5-devel
+FROM nvidia/cuda:8.0-cudnn6-devel
 
 MAINTAINER Roman Suvorov windj007@gmail.com
 
@@ -7,7 +7,7 @@ RUN apt-get install -yqq build-essential libbz2-dev libssl-dev libreadline-dev \
                          libsqlite3-dev tk-dev libpng-dev libfreetype6-dev git \
                          cmake wget gfortran libatlas-base-dev libatlas-dev \
                          libatlas3-base libhdf5-dev libxml2-dev libxslt-dev \
-                         zlib1g-dev pkg-config curl graphviz
+                         zlib1g-dev pkg-config curl graphviz liblapacke-dev
 
 RUN curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
 ENV PYENV_ROOT /root/.pyenv
@@ -24,7 +24,9 @@ RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred 
         plotly pprofile mlxtend fitter mpld3 \
         jupyter_nbextensions_configurator jupyter_contrib_nbextensions==0.2.4 fasttext \
         imbalanced-learn forestci category_encoders hdbscan seaborn networkx joblib eli5 \
-        pydot graphviz dask[complete] opencv-python keras-vis pandas-profiling
+        pydot graphviz dask[complete] opencv-python keras-vis pandas-profiling \
+        git+https://github.com/windj007/libact/#egg=libact \
+        git+https://github.com/IINemo/active_learning_toolbox
 
 RUN pyenv rehash
 
