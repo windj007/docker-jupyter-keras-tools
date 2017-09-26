@@ -5,7 +5,7 @@ It should have been named "Jupyter for Deep Learning, Natural Language Processin
 Dockerized version of Jupyter with installed Keras, TensorFlow, Theano, Sklearn, NLTK, Gensim, Pandas, etc.
 
 Versions:
-* latest tag - python 3.6 + cuda 8.0 CuDNNv5 - master branch
+* latest tag - python 3.6 + cuda 8.0 CuDNNv6 - master branch
 * 8.0 tag - python 2.7 + cuda 8.0 CuDNNv5 - cuda8.0 branch (limited support)
 * 7.5 tag - python 2.7 + cuda 7.5 CuDNNv5 - cuda7.5 branch (unsupported!)
 * 6.5 tag - python 2.7 + cuda 6.5 - cuda6.5 branch (unsupported!)
