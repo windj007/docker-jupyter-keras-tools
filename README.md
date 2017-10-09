@@ -67,20 +67,14 @@ Or, with full options and authentication (for copy-paste convenience :)):
 
 ### Theano
 
-    docker run -ti --rm \
-        $(for d in /dev/nvidia* ; do echo -n "--device=$d " ; done) \
-        $(for f in /usr/lib/x86_64-linux-gnu/libcuda.* ; do echo -n "-v $f:$f " ; done) \
-        $(for f in /usr/lib/x86_64-linux-gnu/libcudnn.* ; do echo -n "-v $f:$f " ; done) \
+    nvidia-docker run -ti --rm \
         windj007/jupyter-keras-tools \
         /test_scripts/test_theano.py
 
 
 ### TensorFlow
 
-    docker run -ti --rm \
-        $(for d in /dev/nvidia* ; do echo -n "--device=$d " ; done) \
-        $(for f in /usr/lib/x86_64-linux-gnu/libcuda.* ; do echo -n "-v $f:$f " ; done) \
-        $(for f in /usr/lib/x86_64-linux-gnu/libcudnn.* ; do echo -n "-v $f:$f " ; done) \
+    nvidia-docker run -ti --rm \
         windj007/jupyter-keras-tools \
         /test_scripts/test_tensorflow.py
 
