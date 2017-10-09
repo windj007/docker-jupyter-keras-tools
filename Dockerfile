@@ -7,7 +7,8 @@ RUN apt-get install -yqq build-essential libbz2-dev libssl-dev libreadline-dev \
                          libsqlite3-dev tk-dev libpng-dev libfreetype6-dev git \
                          cmake wget gfortran libatlas-base-dev libatlas-dev \
                          libatlas3-base libhdf5-dev libxml2-dev libxslt-dev \
-                         zlib1g-dev pkg-config curl graphviz liblapacke-dev
+                         zlib1g-dev pkg-config curl graphviz liblapacke-dev \
+                         locales
 
 RUN curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
 ENV PYENV_ROOT /root/.pyenv
@@ -50,6 +51,13 @@ RUN git clone --recursive https://github.com/Microsoft/LightGBM /tmp/lgbm && \
     python setup.py install && \
     cd /tmp && \
     rm -r /tmp/lgbm
+
+RUN sed -i -e 's/# ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/' /etc/locale.gen && \
+        dpkg-reconfigure --frontend=noninteractive locales
+
+ENV LANG ru_RU.UTF-8
+ENV LANGUAGE ru_RU:ru
+ENV LC_ALL ru_RU.UTF-8
 
 RUN ln -s /usr/local/cuda-8.0/targets/x86_64-linux/lib/stubs/libcuda.so /usr/lib/x86_64-linux-gnu/libcuda.so.1
 RUN pip install -U tensorflow-gpu
