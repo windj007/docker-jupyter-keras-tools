@@ -52,12 +52,12 @@ RUN git clone --recursive https://github.com/Microsoft/LightGBM /tmp/lgbm && \
     cd /tmp && \
     rm -r /tmp/lgbm
 
-RUN sed -i -e 's/# ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/' /etc/locale.gen && \
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
         dpkg-reconfigure --frontend=noninteractive locales
 
-ENV LANG ru_RU.UTF-8
-ENV LANGUAGE ru_RU:ru
-ENV LC_ALL ru_RU.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 RUN ln -s /usr/local/cuda-8.0/targets/x86_64-linux/lib/stubs/libcuda.so /usr/lib/x86_64-linux-gnu/libcuda.so.1
 RUN pip install -U tensorflow-gpu
