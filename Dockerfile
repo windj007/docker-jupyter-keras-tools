@@ -28,7 +28,7 @@ RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred 
         pydot graphviz dask[complete] opencv-python keras-vis pandas-profiling \
         git+https://github.com/windj007/libact/#egg=libact \
         git+https://github.com/IINemo/active_learning_toolbox \
-        scikit-image cv2 imgaug
+        scikit-image imgaug
 
 RUN pyenv rehash
 
