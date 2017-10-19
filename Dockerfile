@@ -28,8 +28,10 @@ RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred 
         pydot graphviz dask[complete] opencv-python keras-vis pandas-profiling \
         git+https://github.com/windj007/libact/#egg=libact \
         git+https://github.com/IINemo/active_learning_toolbox \
-        scikit-image
+        scikit-image http://download.pytorch.org/whl/cu80/torch-0.2.0.post3-cp36-cp36m-manylinux1_x86_64.whl \
+        torchvision pymorphy2[fast] pymorphy2-dicts-ru tqdm tensorboardX
 RUN python -m pip install imgaug
+RUN pip install -U pymystem3 && python -c "import pymystem3 ; pymystem3.Mystem()"
 
 RUN pyenv rehash
 
@@ -63,7 +65,6 @@ ENV LC_ALL en_US.UTF-8
 
 RUN ln -s /usr/local/cuda-8.0/targets/x86_64-linux/lib/stubs/libcuda.so /usr/lib/x86_64-linux-gnu/libcuda.so.1
 RUN pip install -U tensorflow-gpu
-
 
 EXPOSE 8888
 VOLUME ["/notebook", "/jupyter/certs"]
