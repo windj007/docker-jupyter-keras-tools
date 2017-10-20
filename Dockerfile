@@ -31,7 +31,7 @@ RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred 
         scikit-image http://download.pytorch.org/whl/cu80/torch-0.2.0.post3-cp36-cp36m-manylinux1_x86_64.whl \
         torchvision pymorphy2[fast] pymorphy2-dicts-ru tqdm tensorboardX
 RUN python -m pip install imgaug
-RUN pip install -U pymystem3 && python -c "import pymystem3 ; pymystem3.Mystem()"
+RUN pip install -U pymystem3 # && python -c "import pymystem3 ; pymystem3.Mystem()"
 
 RUN pyenv rehash
 
