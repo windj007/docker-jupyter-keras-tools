@@ -64,7 +64,7 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 RUN ln -s /usr/local/cuda-8.0/targets/x86_64-linux/lib/stubs/libcuda.so /usr/lib/x86_64-linux-gnu/libcuda.so.1
-RUN pip install -U tensorflow-gpu
+RUN pip install -U tensorflow-gpu==1.3.0
 
 EXPOSE 8888
 VOLUME ["/notebook", "/jupyter/certs"]
