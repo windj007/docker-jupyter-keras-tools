@@ -3,24 +3,29 @@ FROM nvidia/cuda:8.0-cudnn6-devel
 MAINTAINER Roman Suvorov windj007@gmail.com
 
 RUN apt-get clean && apt-get update
+
+RUN apt-get install -yqq curl
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash
+
 RUN apt-get install -yqq build-essential libbz2-dev libssl-dev libreadline-dev \
                          libsqlite3-dev tk-dev libpng-dev libfreetype6-dev git \
                          cmake wget gfortran libatlas-base-dev libatlas-dev \
                          libatlas3-base libhdf5-dev libxml2-dev libxslt-dev \
-                         zlib1g-dev pkg-config curl graphviz liblapacke-dev \
-                         locales
+                         zlib1g-dev pkg-config graphviz liblapacke-dev \
+                         locales nodejs
 
 RUN curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
 ENV PYENV_ROOT /root/.pyenv
 ENV PATH /root/.pyenv/shims:/root/.pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-RUN pyenv install 3.6.0
-RUN pyenv global 3.6.0
+RUN pyenv install 3.6.4
+RUN pyenv global 3.6.4
 
 RUN pip  install -U pip
 RUN python -m pip install -U cython
 RUN python -m pip install -U numpy # thanks to libatlas-base-dev (base! not libatlas-dev), it will link to atlas
 RUN python -m pip install -U jupyter scipy pandas nltk gensim sklearn theano tensorflow-gpu==1.3.0 \
-        annoy git+https://github.com/fchollet/keras ujson line_profiler tables sharedmem matplotlib
+        annoy git+https://github.com/fchollet/keras ujson line_profiler tables sharedmem matplotlib \
+        jupyterlab
 RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
         plotly pprofile mlxtend fitter mpld3 \
         jupyter_nbextensions_configurator jupyter_contrib_nbextensions==0.2.4 fasttext \
@@ -33,11 +38,13 @@ RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred 
 RUN python -m pip install imgaug
 RUN pip install -U pymystem3 # && python -c "import pymystem3 ; pymystem3.Mystem()"
 
+
 RUN pyenv rehash
 
 RUN jupyter contrib nbextension install --system && \
     jupyter nbextensions_configurator enable --system && \
-    jupyter nbextension enable --py --sys-prefix widgetsnbextension
+    jupyter nbextension enable --py --sys-prefix widgetsnbextension && \
+    jupyter labextension install jupyterlab-toc
 
 RUN git clone --recursive https://github.com/dmlc/xgboost /tmp/xgboost && \
     cd /tmp/xgboost && \
