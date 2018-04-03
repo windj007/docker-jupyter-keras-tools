@@ -63,6 +63,14 @@ RUN git clone --recursive https://github.com/Microsoft/LightGBM /tmp/lgbm && \
     cd /tmp && \
     rm -r /tmp/lgbm
 
+RUN git clone https://code.googlesource.com/re2 /tmp/re2 && \
+    cd /tmp/re2 && \
+    make CFLAGS='-fPIC -c -Wall -Wno-sign-compare -O3 -g -I.' && \
+    make test && \
+    make install && \
+    make testinstall && \
+    pip install -U fb-re2
+
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
         dpkg-reconfigure --frontend=noninteractive locales
 
