@@ -69,6 +69,7 @@ RUN git clone https://code.googlesource.com/re2 /tmp/re2 && \
     make test && \
     make install && \
     make testinstall && \
+    ldconfig && \
     pip install -U fb-re2
 
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
