@@ -1,4 +1,4 @@
-FROM nvidia/cuda:8.0-cudnn6-devel
+FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
 
 MAINTAINER Roman Suvorov windj007@gmail.com
 
@@ -19,7 +19,7 @@ RUN pyenv global 3.6.0
 RUN pip  install -U pip
 RUN python -m pip install -U cython
 RUN python -m pip install -U numpy # thanks to libatlas-base-dev (base! not libatlas-dev), it will link to atlas
-RUN python -m pip install -U jupyter scipy pandas nltk gensim sklearn theano tensorflow-gpu==1.3.0 \
+RUN python -m pip install -U jupyter scipy pandas nltk gensim sklearn theano tensorflow-gpu==1.7.0 \
         annoy git+https://github.com/fchollet/keras ujson line_profiler tables sharedmem matplotlib
 RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
         plotly pprofile mlxtend fitter mpld3 \
@@ -29,7 +29,7 @@ RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred 
         git+https://github.com/windj007/libact/#egg=libact \
         git+https://github.com/IINemo/active_learning_toolbox \
         scikit-image http://download.pytorch.org/whl/cu80/torch-0.3.0.post4-cp36-cp36m-linux_x86_64.whl \
-        torchvision pymorphy2[fast] pymorphy2-dicts-ru tqdm tensorboardX patool skorch fastcluster
+        torchvision pymorphy2[fast] pymorphy2-dicts-ru tqdm tensorboardX patool skorch fastcluster nmslib
 RUN python -m pip install imgaug
 RUN pip install -U pymystem3 # && python -c "import pymystem3 ; pymystem3.Mystem()"
 
@@ -63,8 +63,8 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN ln -s /usr/local/cuda-8.0/targets/x86_64-linux/lib/stubs/libcuda.so /usr/lib/x86_64-linux-gnu/libcuda.so.1
-RUN pip install -U tensorflow-gpu==1.3.0
+# RUN ln -s /usr/local/cuda-8.0/targets/x86_64-linux/lib/stubs/libcuda.so /usr/lib/x86_64-linux-gnu/libcuda.so.1
+RUN pip install -U tensorflow-gpu==1.7.0
 
 EXPOSE 8888
 VOLUME ["/notebook", "/jupyter/certs"]
