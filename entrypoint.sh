@@ -18,4 +18,6 @@ then
     export THEANO_FLAGS="mode=FAST_RUN,device=gpu,floatX=float32"
 fi
 
+export PYTHONPATH="$PYTHONPATH:/notebook"
+
 $@
