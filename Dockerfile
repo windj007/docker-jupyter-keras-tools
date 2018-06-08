@@ -23,7 +23,7 @@ RUN pyenv global 3.6.4
 RUN pip  install -U pip
 RUN python -m pip install -U cython
 RUN python -m pip install -U numpy # thanks to libatlas-base-dev (base! not libatlas-dev), it will link to atlas
-RUN python -m pip install -U jupyter scipy pandas nltk gensim sklearn theano tensorflow-gpu==1.7.0 \
+RUN python -m pip install -U jupyter scipy pandas nltk gensim sklearn theano tensorflow-gpu==1.8.0 \
         annoy git+https://github.com/fchollet/keras ujson line_profiler tables sharedmem matplotlib \
         jupyterlab
 RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
