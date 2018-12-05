@@ -17,40 +17,42 @@ RUN apt-get install -yqq build-essential libbz2-dev libssl-dev libreadline-dev \
 RUN curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
 ENV PYENV_ROOT /root/.pyenv
 ENV PATH /root/.pyenv/shims:/root/.pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-RUN pyenv install 3.6.4
-RUN pyenv global 3.6.4
+RUN pyenv install 3.6.7
+RUN pyenv global 3.6.7
 
 RUN pip  install -U pip
 RUN python -m pip install -U cython
 RUN python -m pip install -U numpy # thanks to libatlas-base-dev (base! not libatlas-dev), it will link to atlas
-RUN python -m pip install -U jupyter scipy pandas nltk gensim sklearn theano tensorflow-gpu==1.8.0 \
-        annoy git+https://github.com/fchollet/keras ujson line_profiler tables sharedmem matplotlib \
-        jupyterlab
-RUN python -m pip install -U h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
+
+RUN python -m pip install scipy pandas nltk gensim sklearn tensorflow-gpu \
+        annoy keras ujson line_profiler tables sharedmem matplotlib torch torchvision
+
+RUN pip install git+https://github.com/pybind/pybind11.git 
+RUN pip install nmslib
+RUN python -m pip install -U \
+        h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
         plotly pprofile mlxtend fitter mpld3 \
-        jupyter_nbextensions_configurator jupyter_contrib_nbextensions==0.2.4 fasttext \
+        git+https://github.com/facebookresearch/fastText.git \
         imbalanced-learn forestci category_encoders hdbscan seaborn networkx joblib eli5 \
         pydot graphviz dask[complete] opencv-python keras-vis pandas-profiling \
         git+https://github.com/windj007/libact/#egg=libact \
         git+https://github.com/IINemo/active_learning_toolbox \
-        scikit-image http://download.pytorch.org/whl/cu90/torch-0.3.1-cp36-cp36m-linux_x86_64.whl \
-        torchvision pymorphy2[fast] pymorphy2-dicts-ru tqdm tensorboardX patool skorch fastcluster nmslib
-RUN python -m pip install imgaug
+        scikit-image pymorphy2[fast] pymorphy2-dicts-ru tqdm tensorboardX patool \
+        skorch fastcluster \
+        xgboost imgaug grpcio git+https://github.com/IINemo/isanlp.git
+
 RUN pip install -U pymystem3 # && python -c "import pymystem3 ; pymystem3.Mystem()"
 
+RUN python -m pip install -U jupyter jupyterlab \
+        jupyter_nbextensions_configurator jupyter_contrib_nbextensions==0.2.4
 
 RUN pyenv rehash
 
 RUN jupyter contrib nbextension install --system && \
     jupyter nbextensions_configurator enable --system && \
     jupyter nbextension enable --py --sys-prefix widgetsnbextension && \
-    jupyter labextension install jupyterlab-toc
-
-RUN git clone --recursive https://github.com/dmlc/xgboost /tmp/xgboost && \
-    cd /tmp/xgboost && \
-    make && \
-    cd python-package && \
-    python setup.py install
+    jupyter labextension install @jupyterlab/toc && \
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
 RUN git clone --recursive https://github.com/Microsoft/LightGBM /tmp/lgbm && \
     cd /tmp/lgbm && \
@@ -78,8 +80,6 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
-
-RUN pip install -U tensorflow-gpu==1.7.0
 
 EXPOSE 8888
 VOLUME ["/notebook", "/jupyter/certs"]
