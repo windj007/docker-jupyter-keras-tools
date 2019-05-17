@@ -41,8 +41,11 @@ RUN python -m pip install -U \
         skorch fastcluster \
         xgboost imgaug grpcio git+https://github.com/IINemo/isanlp.git 
 
-RUN apt-get install -yqq liblapack-dev liblapacke-dev libopenblas-dev libatlas-base-dev gfortran liblapack3
-RUN pip install  git+https://github.com/IINemo/libact.git
+#COPY libact /libact
+#RUN apt-get install -yqq liblapack-dev liblapacke-dev libopenblas-dev libatlas-base-dev gfortran liblapack3
+#RUN apt-get install -yqq  build-essential gfortran libatlas-base-dev liblapacke-dev
+#RUN pip install -e /libact
+RUN pip install git+https://github.com/IINemo/libact.git
 
 RUN pip install -U pymystem3 # && python -c "import pymystem3 ; pymystem3.Mystem()"
 
