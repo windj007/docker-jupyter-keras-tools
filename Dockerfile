@@ -14,9 +14,10 @@ RUN apt-get install -yqq build-essential libbz2-dev libssl-dev libreadline-dev \
                          zlib1g-dev pkg-config graphviz liblapacke-dev \
                          locales nodejs
 
+ENV PYENV_ROOT /opt/.pyenv
+#RUN export PYENV_ROOT=/opt/.pyenv && curl -o /opt/ -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
 RUN curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
-ENV PYENV_ROOT /root/.pyenv
-ENV PATH /root/.pyenv/shims:/root/.pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH /opt/.pyenv/shims:/opt/.pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN pyenv install 3.6.7
 RUN pyenv global 3.6.7
 
@@ -24,7 +25,7 @@ RUN pip  install -U pip
 RUN python -m pip install -U cython
 RUN python -m pip install -U numpy # thanks to libatlas-base-dev (base! not libatlas-dev), it will link to atlas
 
-RUN python -m pip install scipy pandas nltk gensim sklearn tensorflow-gpu \
+RUN python -m pip install scipy pandas nltk gensim sklearn tensorflow-gpu==1.12.0 \
         annoy keras ujson line_profiler tables sharedmem matplotlib torch torchvision
 
 RUN pip install git+https://github.com/pybind/pybind11.git 
@@ -35,11 +36,13 @@ RUN python -m pip install -U \
         git+https://github.com/facebookresearch/fastText.git \
         imbalanced-learn forestci category_encoders hdbscan seaborn networkx joblib eli5 \
         pydot graphviz dask[complete] opencv-python keras-vis pandas-profiling \
-        git+https://github.com/windj007/libact/#egg=libact \
         git+https://github.com/IINemo/active_learning_toolbox \
         scikit-image pymorphy2[fast] pymorphy2-dicts-ru tqdm tensorboardX patool \
         skorch fastcluster \
-        xgboost imgaug grpcio git+https://github.com/IINemo/isanlp.git
+        xgboost imgaug grpcio git+https://github.com/IINemo/isanlp.git 
+
+RUN apt-get install -yqq liblapack-dev liblapacke-dev libopenblas-dev libatlas-base-dev gfortran liblapack3
+RUN pip install  git+https://github.com/IINemo/libact.git
 
 RUN pip install -U pymystem3 # && python -c "import pymystem3 ; pymystem3.Mystem()"
 
@@ -87,6 +90,7 @@ WORKDIR /notebook
 
 ADD test_scripts /test_scripts
 ADD jupyter /jupyter
+RUN chmod 777 /jupyter
 COPY entrypoint.sh /entrypoint.sh
 COPY hashpwd.py /hashpwd.py
 
