@@ -1,4 +1,4 @@
 Bootstrap: docker
 Registry: http://localhost:5000
 Namespace:
-From: jupyter_dl:latest
+From:  windj007/jupyter-keras-tools:latest
