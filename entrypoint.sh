@@ -13,11 +13,6 @@ then
         /jupyter/jupyter_notebook_config.py
 fi
 
-if [ -z "$THEANO_FLAGS" ]
-then
-    export THEANO_FLAGS="mode=FAST_RUN,device=gpu,floatX=float32"
-fi
-
 export PYTHONPATH="$PYTHONPATH:/notebook"
 
 $@
