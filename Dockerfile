@@ -14,84 +14,40 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential libbz2-dev
                          zlib1g-dev pkg-config graphviz \
                          locales nodejs libffi-dev liblapacke-dev libblas-dev liblapack-dev liblzma-dev
 
-ENV PYENV_ROOT /opt/.pyenv
-RUN curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
-ENV PATH /opt/.pyenv/shims:/opt/.pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-RUN pyenv install 3.8.12
-RUN pyenv global 3.8.12
+ENV PATH="/opt/conda/bin:${PATH}"
+ARG PATH="/opt/conda/bin:${PATH}"
+RUN wget -nv https://repo.anaconda.com/miniconda/Miniconda3-py39_4.10.3-Linux-x86_64.sh -O miniconda.sh && \ 
+             bash miniconda.sh -b -p /opt/conda
 
-RUN pip  install -U pip
+RUN conda install -c conda-forge jupyterlab
+RUN conda install -c conda-forge nb_conda_kernels
+RUN conda install -c conda-forge jupyter_contrib_nbextensions
+
+RUN conda install pip
 RUN python -m pip install -U cython
 
-#RUN pip install https://download.pytorch.org/whl/cu110/torch-1.7.1%2Bcu110-cp38-cp38-linux_x86_64.whl
-RUN pip install torch==1.10.0+cu113 torchvision==0.11.1+cu113 torchaudio==0.10.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+RUN pip install torch==1.10.0+cu113 torchvision==0.11.1+cu113 torchaudio==0.10.0+cu113 \ 
+                -f https://download.pytorch.org/whl/cu113/torch_stable.html
 RUN pip install tensorflow-gpu
 
-RUN pip install git+https://github.com/rkern/line_profiler.git
-RUN python -m pip install  \
-           numpy scipy pandas gensim sklearn \
-           annoy keras ujson line_profiler tables sharedmem matplotlib \
-           xgboost joblib lxml h5py tqdm lightgbm 
+RUN pip install numpy scipy pandas gensim sklearn scikit-image \
+           annoy ujson line_profiler tables sharedmem matplotlib \
+           xgboost joblib lxml h5py tqdm lightgbm lime \ 
+           scikit-image tensorboardX plotly graphviz seaborn
 
-RUN pip install transformers allennlp grpcio \
-        git+https://github.com/IINemo/isanlp.git nltk \
-        git+https://github.com/facebookresearch/fastText.git
+RUN pip install transformers allennlp nltk
+#RUN pip install grpcio git+https://github.com/IINemo/isanlp.git \
 RUN pip install deeppavlov --no-deps
 RUN pip install -U pymystem3 # && python -c "import pymystem3 ; pymystem3.Mystem()"
-#RUN pip install pymorphy2[fast] pymorphy2-dicts-ru
+RUN pip install pymorphy2[fast] pymorphy2-dicts-ru
 
-RUN python -m pip install -U \
-        git+https://github.com/pybind/pybind11.git nmslib \
-        gym \
-        sacred git+https://github.com/marcotcr/lime \
-        plotly pprofile mlxtend fitter mpld3 \
-        imbalanced-learn forestci category_encoders hdbscan seaborn networkx eli5 \
-        pydot graphviz dask[complete] opencv-python keras-vis pandas-profiling \
-        scikit-image tensorboardX patool \
-        skorch fastcluster imgaug torchvision 
+RUN conda install ipykernel
 
-#RUN git clone https://github.com/IINemo/libact.git /tmp/libact && cd /tmp/libact && \
-#git fetch origin && git checkout -b seq2 origin/seq2 && rm libact/query_strategies/_hintsvm.c && \
-#  python -m pip install -e ./
-
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash
-RUN apt-get install -y nodejs
-
-RUN python -m pip install -U jupyter jupyterlab \
-        jupyter_nbextensions_configurator jupyter_contrib_nbextensions
-
-RUN pyenv rehash
-
-
-RUN jupyter contrib nbextension install --system && \
-    jupyter nbextensions_configurator enable --system && \
-    jupyter nbextension enable --py --sys-prefix widgetsnbextension && \
-    jupyter labextension install @jupyterlab/toc && \
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager
-
-#RUN git clone --recursive https://github.com/Microsoft/LightGBM /tmp/lgbm && \
-#    cd /tmp/lgbm && \
-#    mkdir build && \
-#    cd build && \
-#    cmake .. && \
-#    make && \
-#    cd ../python-package && \
-#    python setup.py install && \
-#    cd /tmp && \
-#    rm -r /tmp/lgbm
-
-#RUN git clone https://code.googlesource.com/re2 /tmp/re2 && \
-#    cd /tmp/re2 && \
-#    make CFLAGS='-fPIC -c -Wall -Wno-sign-compare -O3 -g -I.' && \
-#    make test && \
-#    make install && \
-#    make testinstall && \
-#    ldconfig && \
-#    pip install -U fb-re2
+RUN conda init && curl -sL https://deb.nodesource.com/setup_16.x | bash
+RUN conda init && apt-get install -y nodejs
 
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
         dpkg-reconfigure --frontend=noninteractive locales
-
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
