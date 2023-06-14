@@ -1,10 +1,17 @@
-FROM nvidia/cuda:11.3.0-devel-ubuntu20.04
+FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
 
-MAINTAINER Roman Suvorov windj007@gmail.com
+ARG NB_USER="jovyan"
+ARG NB_UID="1001"
+ARG NB_GID="100"
 
-RUN apt-get clean && apt-get update
 
-RUN apt-get install -yqq curl
+# ====== ROOT ======
+USER root
+
+# Basic libs
+RUN apt clean && apt update
+
+RUN apt install -yqq curl
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential libbz2-dev \
                          libssl-dev libreadline-dev \
@@ -14,55 +21,95 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential libbz2-dev
                          zlib1g-dev pkg-config graphviz \
                          locales nodejs libffi-dev liblapacke-dev libblas-dev liblapack-dev liblzma-dev
 
-ENV PATH="/opt/conda/bin:${PATH}"
-ARG PATH="/opt/conda/bin:${PATH}"
-RUN wget -nv https://repo.anaconda.com/miniconda/Miniconda3-py39_4.10.3-Linux-x86_64.sh -O miniconda.sh && \ 
-             bash miniconda.sh -b -p /opt/conda
+RUN apt install -y acl
 
-RUN conda install -c conda-forge jupyterlab
-RUN conda install -c conda-forge nb_conda_kernels
-RUN conda install -c conda-forge jupyter_contrib_nbextensions
+# Nodejs 
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash && apt install -y nodejs
 
-RUN conda install pip
-RUN python -m pip install -U cython
+# VPN
+RUN apt -y install openvpn
 
-RUN pip install torch==1.10.0+cu113 torchvision==0.11.1+cu113 torchaudio==0.10.0+cu113 \ 
-                -f https://download.pytorch.org/whl/cu113/torch_stable.html
-RUN pip install tensorflow-gpu
+# SSH
+RUN apt install -y openssh-server 
 
-RUN pip install numpy scipy pandas gensim sklearn scikit-image \
-           annoy ujson line_profiler tables sharedmem matplotlib \
-           xgboost joblib lxml h5py tqdm lightgbm lime \ 
-           scikit-image tensorboardX plotly graphviz seaborn
-
-RUN pip install transformers allennlp nltk
-#RUN pip install grpcio git+https://github.com/IINemo/isanlp.git \
-RUN pip install deeppavlov --no-deps
-RUN pip install -U pymystem3 # && python -c "import pymystem3 ; pymystem3.Mystem()"
-RUN pip install pymorphy2[fast] pymorphy2-dicts-ru
-
-RUN conda install ipykernel
-
-RUN conda init && curl -sL https://deb.nodesource.com/setup_16.x | bash
-RUN conda init && apt-get install -y nodejs
-
+# UTF-8 locale
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
         dpkg-reconfigure --frontend=noninteractive locales
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-EXPOSE 8888
-VOLUME ["/notebook", "/jupyter/certs"]
+# Create nonroot user
+ENV CONDA_DIR=/opt/conda
+RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+   mkdir -p $CONDA_DIR && \
+   chown $NB_USER:$NB_GID $CONDA_DIR && \
+   chmod -R 777 $CONDA_DIR
+
+ENV HOME=/home/$NB_USER
+
+
+# ====== NONROOT ======
+
+USER $NB_UID
+WORKDIR /tmp
+
+RUN setfacl -PRdm u::rwx,g::rwx,o::rwx ${CONDA_DIR}
+RUN setfacl -PRdm u::rwx,g::rwx,o::rwx ${HOME}
+
+# Install Python
+ENV PATH="$CONDA_DIR/bin:${PATH}"
+RUN wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && \ 
+             bash miniconda.sh -f -b -p $CONDA_DIR && \
+             rm -f miniconda.sh
+RUN conda config --add channels conda-forge
+
+# Generaul ML tools
+RUN conda install \ 
+           numpy scipy pandas gensim scikit-learn scikit-image \
+           ujson line_profiler matplotlib \
+           xgboost joblib lxml h5py tqdm lightgbm lime \ 
+           scikit-image tensorboardX plotly graphviz seaborn
+RUN pip install tables sharedmem
+
+# Basic computation frameworks
+RUN pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cu118
+RUN conda install tensorflow
+
+# NLP tools
+RUN conda install -c conda-forge nltk
+RUN pip install transformers
+RUN pip install -U pymystem3 # && python -c "import pymystem3 ; pymystem3.Mystem()"
+
+# CV tools
+RUN pip install torchvision --index-url https://download.pytorch.org/whl/cu118
+
+# Jupyterlab
+RUN conda install -c conda-forge jupyterlab
+RUN conda install -c conda-forge nb_conda_kernels
+RUN conda install -c conda-forge jupyter_contrib_nbextensions
+RUN conda install -c conda-forge ipywidgets
+
+
+# ==== Finalizing ====
+VOLUME ["/notebook", "$HOME/jupyter/certs"]
 WORKDIR /notebook
 
-ADD test_scripts /test_scripts
-ADD jupyter /jupyter
-RUN chmod 777 /jupyter
-COPY entrypoint.sh /entrypoint.sh
-COPY hashpwd.py /hashpwd.py
+COPY --chown=$NB_UID:$NB_GID --chmod=777 test_scripts $HOME/test_scripts
+COPY --chown=$NB_UID:$NB_GID --chmod=777 jupyter $HOME/jupyter
 
-ENV JUPYTER_CONFIG_DIR="/jupyter"
+# RUN chmod -R 777 $CONDA_DIR
+RUN chmod -R 777 $HOME
+
+COPY --chmod=777 entrypoint.sh /entrypoint.sh
+COPY --chmod=777 hashpwd.py /hashpwd.py
+
+ENV JUPYTER_CONFIG_DIR="${HOME}/jupyter"
+ENV JUPYTER_RUNTIME_DIR="${HOME}/jupyter/run"
+ENV JUPYTER_DATA_DIR="${HOME}/jupyter/data"
+
+EXPOSE 8888
+EXPOSE 22
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD [ "jupyter", "notebook", "--ip=0.0.0.0", "--allow-root" ]
+CMD [ "jupyter", "lab", "--ip=0.0.0.0", "--allow-root" ]
