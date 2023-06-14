@@ -1,96 +1,115 @@
-FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
+FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
 
-MAINTAINER Roman Suvorov windj007@gmail.com
+ARG NB_USER="jovyan"
+ARG NB_UID="1001"
+ARG NB_GID="100"
 
-RUN apt-get clean && apt-get update
 
-RUN apt-get install -yqq curl
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash
+# ====== ROOT ======
+USER root
 
-RUN apt-get install -yqq build-essential libbz2-dev libssl-dev libreadline-dev \
+# Basic libs
+RUN apt clean && apt update
+
+RUN apt install -yqq curl
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential libbz2-dev \
+                         libssl-dev libreadline-dev \
                          libsqlite3-dev tk-dev libpng-dev libfreetype6-dev git \
-                         cmake wget gfortran libatlas-base-dev libatlas-dev \
+                         cmake wget gfortran \
                          libatlas3-base libhdf5-dev libxml2-dev libxslt-dev \
-                         zlib1g-dev pkg-config graphviz liblapacke-dev \
-                         locales nodejs
+                         zlib1g-dev pkg-config graphviz \
+                         locales nodejs libffi-dev liblapacke-dev libblas-dev liblapack-dev liblzma-dev
 
-RUN curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
-ENV PYENV_ROOT /root/.pyenv
-ENV PATH /root/.pyenv/shims:/root/.pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-RUN pyenv install 3.6.7
-RUN pyenv global 3.6.7
+RUN apt install -y acl
 
-RUN pip  install -U pip
-RUN python -m pip install -U cython
-RUN python -m pip install -U numpy # thanks to libatlas-base-dev (base! not libatlas-dev), it will link to atlas
+# Nodejs 
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash && apt install -y nodejs
 
-RUN python -m pip install scipy pandas nltk gensim sklearn tensorflow-gpu \
-        annoy keras ujson line_profiler tables sharedmem matplotlib torch torchvision
+# VPN
+RUN apt -y install openvpn
 
-RUN pip install git+https://github.com/pybind/pybind11.git 
-RUN pip install nmslib
-RUN python -m pip install -U \
-        h5py lxml git+https://github.com/openai/gym sacred git+https://github.com/marcotcr/lime \
-        plotly pprofile mlxtend fitter mpld3 \
-        git+https://github.com/facebookresearch/fastText.git \
-        imbalanced-learn forestci category_encoders hdbscan seaborn networkx joblib eli5 \
-        pydot graphviz dask[complete] opencv-python keras-vis pandas-profiling \
-        git+https://github.com/windj007/libact/#egg=libact \
-        git+https://github.com/IINemo/active_learning_toolbox \
-        scikit-image pymorphy2[fast] pymorphy2-dicts-ru tqdm tensorboardX patool \
-        skorch fastcluster \
-        xgboost imgaug grpcio git+https://github.com/IINemo/isanlp.git
+# SSH
+RUN apt install -y openssh-server 
 
-RUN pip install -U pymystem3 # && python -c "import pymystem3 ; pymystem3.Mystem()"
-
-RUN python -m pip install -U jupyter jupyterlab \
-        jupyter_nbextensions_configurator jupyter_contrib_nbextensions==0.2.4
-
-RUN pyenv rehash
-
-RUN jupyter contrib nbextension install --system && \
-    jupyter nbextensions_configurator enable --system && \
-    jupyter nbextension enable --py --sys-prefix widgetsnbextension && \
-    jupyter labextension install @jupyterlab/toc && \
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager
-
-RUN git clone --recursive https://github.com/Microsoft/LightGBM /tmp/lgbm && \
-    cd /tmp/lgbm && \
-    mkdir build && \
-    cd build && \
-    cmake .. && \
-    make && \
-    cd ../python-package && \
-    python setup.py install && \
-    cd /tmp && \
-    rm -r /tmp/lgbm
-
-RUN git clone https://code.googlesource.com/re2 /tmp/re2 && \
-    cd /tmp/re2 && \
-    make CFLAGS='-fPIC -c -Wall -Wno-sign-compare -O3 -g -I.' && \
-    make test && \
-    make install && \
-    make testinstall && \
-    ldconfig && \
-    pip install -U fb-re2
-
+# UTF-8 locale
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
         dpkg-reconfigure --frontend=noninteractive locales
-
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-EXPOSE 8888
-VOLUME ["/notebook", "/jupyter/certs"]
+# Create nonroot user
+ENV CONDA_DIR=/opt/conda
+RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+   mkdir -p $CONDA_DIR && \
+   chown $NB_USER:$NB_GID $CONDA_DIR && \
+   chmod -R 777 $CONDA_DIR
+
+ENV HOME=/home/$NB_USER
+
+
+# ====== NONROOT ======
+
+USER $NB_UID
+WORKDIR /tmp
+
+RUN setfacl -PRdm u::rwx,g::rwx,o::rwx ${CONDA_DIR}
+RUN setfacl -PRdm u::rwx,g::rwx,o::rwx ${HOME}
+
+# Install Python
+ENV PATH="$CONDA_DIR/bin:${PATH}"
+RUN wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && \ 
+             bash miniconda.sh -f -b -p $CONDA_DIR && \
+             rm -f miniconda.sh
+RUN conda config --add channels conda-forge
+
+# Generaul ML tools
+RUN conda install \ 
+           numpy scipy pandas gensim scikit-learn scikit-image \
+           ujson line_profiler matplotlib \
+           xgboost joblib lxml h5py tqdm lightgbm lime \ 
+           scikit-image tensorboardX plotly graphviz seaborn
+RUN pip install tables sharedmem
+
+# Basic computation frameworks
+RUN pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cu118
+RUN conda install tensorflow
+
+# NLP tools
+RUN conda install -c conda-forge nltk
+RUN pip install transformers
+RUN pip install -U pymystem3 # && python -c "import pymystem3 ; pymystem3.Mystem()"
+
+# CV tools
+RUN pip install torchvision --index-url https://download.pytorch.org/whl/cu118
+
+# Jupyterlab
+RUN conda install -c conda-forge jupyterlab
+RUN conda install -c conda-forge nb_conda_kernels
+RUN conda install -c conda-forge jupyter_contrib_nbextensions
+RUN conda install -c conda-forge ipywidgets
+
+
+# ==== Finalizing ====
+VOLUME ["/notebook", "$HOME/jupyter/certs"]
 WORKDIR /notebook
 
-ADD test_scripts /test_scripts
-ADD jupyter /jupyter
-COPY entrypoint.sh /entrypoint.sh
-COPY hashpwd.py /hashpwd.py
+COPY --chown=$NB_UID:$NB_GID --chmod=777 test_scripts $HOME/test_scripts
+COPY --chown=$NB_UID:$NB_GID --chmod=777 jupyter $HOME/jupyter
 
-ENV JUPYTER_CONFIG_DIR="/jupyter"
+# RUN chmod -R 777 $CONDA_DIR
+RUN chmod -R 777 $HOME
+
+COPY --chmod=777 entrypoint.sh /entrypoint.sh
+COPY --chmod=777 hashpwd.py /hashpwd.py
+
+ENV JUPYTER_CONFIG_DIR="${HOME}/jupyter"
+ENV JUPYTER_RUNTIME_DIR="${HOME}/jupyter/run"
+ENV JUPYTER_DATA_DIR="${HOME}/jupyter/data"
+
+EXPOSE 8888
+EXPOSE 22
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD [ "jupyter", "notebook", "--ip=0.0.0.0", "--allow-root" ]
+CMD [ "jupyter", "lab", "--ip=0.0.0.0", "--allow-root" ]
